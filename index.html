@@ -46,7 +46,6 @@
             cursor: pointer;
         }
 
-        /* 再生シーン */
         .music-play-scene {
             display: none;
             position: fixed;
@@ -85,12 +84,10 @@
 </head>
 <body>
 
-    <!-- ヘッダー -->
     <header>
         <h1>Music Player</h1>
     </header>
 
-    <!-- 曲の選択セクション -->
     <section class="music-section">
         <div class="music-card" onclick="playMusic('track1')">
             <h3>曲 1</h3>
@@ -109,12 +106,10 @@
         </div>
     </section>
 
-    <!-- 再生シーン -->
     <section id="music-play-scene" class="music-play-scene">
         <h2>再生中...</h2>
         <audio id="audio-player" controls></audio>
-        
-        <!-- コントロールパネル -->
+
         <div class="control-panel">
             <label for="volume-control">音量 (0〜500)</label><br>
             <input type="range" id="volume-control" min="0" max="500" value="100" step="10" oninput="setVolume(this.value)">
@@ -125,26 +120,39 @@
             <label for="seek-control">再生位置</label><br>
             <input type="range" id="seek-control" min="0" max="100" value="0" step="1" oninput="setSeek(this.value)">
         </div>
-        
-        <!-- ホームに戻るボタン -->
+
         <button class="back-home-btn" onclick="backToHome()">HOMEに戻る</button>
     </section>
 
     <script>
         const audio = document.getElementById('audio-player');
+        let audioContext;
+        let gainNode;
+
+        // Web Audio API を初期化
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaElementSource(audio);
+                gainNode = audioContext.createGain();  // 音量を制御するノードを作成
+                source.connect(gainNode).connect(audioContext.destination);
+            }
+        }
 
         // 曲を再生する関数
         function playMusic(track) {
+            initAudioContext();  // Web Audio API の初期化
             document.getElementById('music-play-scene').classList.add('play-scene-active');
             audio.src = `https://raw.githubusercontent.com/CinnabonK/music/main/${track}.mp3`;
-            audio.volume = 0.2;  // 初期音量 (0〜1 の範囲で設定)
             audio.play();
             document.body.style.overflow = 'hidden'; // スクロールを無効化
         }
 
-        // 音量を設定する関数
+        // 音量を設定する関数 (0〜500%)
         function setVolume(value) {
-            audio.volume = Math.min(value / 500, 1);  // volumeプロパティは0〜1の範囲
+            if (gainNode) {
+                gainNode.gain.value = Math.min(value / 100, 5);  // 0〜5 までのゲイン値を設定
+            }
         }
 
         // 再生速度を設定する関数
