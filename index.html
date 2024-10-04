@@ -136,7 +136,7 @@
         // 曲を再生する関数
         function playMusic(track) {
             document.getElementById('music-play-scene').classList.add('play-scene-active');
-            audio.src = `https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO/main/${track}.mp3`;
+            audio.src = `https://raw.githubusercontent.com/CinnabonK/music/main/${track}.mp3`;
             audio.volume = 0.2;  // 初期音量 (0〜1 の範囲で設定)
             audio.play();
             document.body.style.overflow = 'hidden'; // スクロールを無効化
