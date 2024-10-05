@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://CinnabonK.github.io/favicon.ico" type="image/x-icon">
-    <title>Music Player</title>
+    <title>合唱コンクール用音楽プレイヤー - 高音量バージョン</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
         }
         header {
             background-color: #d84527;
@@ -18,59 +17,37 @@
             text-align: center;
             color: white;
         }
-        .music-section {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 20px;
-        }
         .music-card {
-            width: 300px;
-            padding: 30px;
+            display: inline-block;
+            width: 200px;
+            margin: 20px;
+            padding: 20px;
             background-color: white;
+            text-align: center;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .player-controls {
+            margin-top: 20px;
             text-align: center;
         }
-        .music-card h3 {
-            margin: 10px 0;
-        }
-        .music-card button {
-            margin-top: 15px;
-            padding: 15px;
-            font-size: 18px;
-            background-color: #d84527;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .music-play-scene {
+        .game-play-scene {
             display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             z-index: 100;
         }
         .play-scene-active {
-            display: flex;
-        }
-        .control-panel {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .control-panel input[type="range"] {
-            width: 300px;
-            margin-bottom: 20px;
+            display: block;
         }
         .back-home-btn {
             background-color: #d84527;
@@ -85,105 +62,108 @@
 </head>
 <body>
 
-    <header>
-        <h1>Music Player</h1>
-    </header>
+<header>
+    <h1>合唱コンクール用音楽プレイヤー</h1>
+</header>
 
-    <section class="music-section">
-        <div class="music-card" onclick="playMusic('track1')">
-            <h3>曲 1</h3>
-            <p>曲の説明</p>
-            <button>再生する</button>
-        </div>
-        <div class="music-card" onclick="playMusic('track2')">
-            <h3>曲 2</h3>
-            <p>曲の説明</p>
-            <button>再生する</button>
-        </div>
-        <div class="music-card" onclick="playMusic('track3')">
-            <h3>曲 3</h3>
-            <p>曲の説明</p>
-            <button>再生する</button>
-        </div>
-    </section>
+<section id="music-selection">
+    <div class="music-card" onclick="playMusic('song1')">
+        <img src="images/song1.jpg" alt="Song 1">
+        <h3>曲 1</h3>
+    </div>
+    <div class="music-card" onclick="playMusic('song2')">
+        <img src="images/song2.jpg" alt="Song 2">
+        <h3>曲 2</h3>
+    </div>
+    <div class="music-card" onclick="playMusic('song3')">
+        <img src="images/song3.jpg" alt="Song 3">
+        <h3>曲 3</h3>
+    </div>
+</section>
 
-    <section id="music-play-scene" class="music-play-scene">
-        <h2>再生中...</h2>
-        <audio id="audio-player" controls></audio>
+<section id="song-play" class="game-play-scene">
+    <h2 id="song-title">曲の再生中</h2>
 
-        <div class="control-panel">
-            <label for="volume-control">音量 (0〜500)</label><br>
-            <input type="range" id="volume-control" min="0" max="500" value="100" step="10" oninput="setVolume(this.value)">
-            <br>
-            <label for="speed-control">再生速度 (0.5〜2.0)</label><br>
-            <input type="range" id="speed-control" min="0.5" max="2" value="1" step="0.1" oninput="setSpeed(this.value)">
-            <br>
-            <label for="seek-control">再生位置</label><br>
-            <input type="range" id="seek-control" min="0" max="100" value="0" step="1" oninput="setSeek(this.value)">
-        </div>
+    <!-- オーディオタグを複数作成して音量を増強 -->
+    <audio id="audio-player-1" controls></audio>
+    <audio id="audio-player-2" style="display:none;"></audio>
+    <audio id="audio-player-3" style="display:none;"></audio>
+    <audio id="audio-player-4" style="display:none;"></audio>
 
-        <button class="back-home-btn" onclick="backToHome()">HOMEに戻る</button>
-    </section>
+    <div class="player-controls">
+        <label for="speed-slider">再生速度: </label>
+        <input type="range" id="speed-slider" min="0.5" max="2" value="1" step="0.1" onchange="changeSpeed()">
+        <br>
+        <label for="seek-slider">再生位置: </label>
+        <input type="range" id="seek-slider" min="0" max="100" value="0" onchange="seekAudio()">
+    </div>
 
-    <script>
-        const audio = new Audio('https://CinnabonK.github.io/music/track1.mp3');
-audio.play();
+    <button class="back-home-btn" onclick="backToHome()">HOMEに戻る</button>
+</section>
 
-        let audioContext;
-        let gainNode;
+<script>
+    const audioPlayer1 = document.getElementById('audio-player-1');
+    const audioPlayer2 = document.getElementById('audio-player-2');
+    const audioPlayer3 = document.getElementById('audio-player-3');
+    const audioPlayer4 = document.getElementById('audio-player-4');
 
-        // Web Audio API を初期化
-        function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioContext.createMediaElementSource(audio);
-                gainNode = audioContext.createGain();  // 音量を制御するノードを作成
-                source.connect(gainNode).connect(audioContext.destination);
-            }
-        }
+    const speedSlider = document.getElementById('speed-slider');
+    const seekSlider = document.getElementById('seek-slider');
+    let currentAudio = '';
 
-        // 曲を再生する関数
-        function playMusic(track) {
-            initAudioContext();  // Web Audio API の初期化
-            document.getElementById('music-play-scene').classList.add('play-scene-active');
-            audio.src = 'https://CinnabonK.github.io/music/track1.mp3';
-            audio.play();
-            document.body.style.overflow = 'hidden'; // スクロールを無効化
-        }
-
-        // 音量を設定する関数 (0〜500%)
-        function setVolume(value) {
-            if (gainNode) {
-                gainNode.gain.value = Math.min(value / 100, 5);  // 0〜5 までのゲイン値を設定
-            }
-        }
-
-        // 再生速度を設定する関数
-        function setSpeed(value) {
-            audio.playbackRate = value;
-        }
-
-        // 再生位置を設定する関数
-        function setSeek(value) {
-            const duration = audio.duration;
-            if (!isNaN(duration)) {
-                audio.currentTime = (duration * value) / 100;
-            }
-        }
-
-        // HOMEに戻る
-        function backToHome() {
-            document.getElementById('music-play-scene').classList.remove('play-scene-active');
-            audio.pause();
-            document.body.style.overflow = 'auto'; // スクロールを再有効化
-        }
-
-        // 再生位置スライダーの値を更新する関数
-        audio.addEventListener('timeupdate', function() {
-            const seekControl = document.getElementById('seek-control');
-            seekControl.value = (audio.currentTime / audio.duration) * 100 || 0;
+    function playMusic(songId) {
+        const songs = {
+            'song1': 'mp3/song1.mp3',
+            'song2': 'mp3/song2.mp3',
+            'song3': 'mp3/song3.mp3'
+        };
+        document.getElementById('song-title').innerText = songId === 'song1' ? '曲 1' : songId === 'song2' ? '曲 2' : '曲 3';
+        currentAudio = songs[songId];
+        
+        // 同じ曲を複数のオーディオタグで再生して音量を増強
+        [audioPlayer1, audioPlayer2, audioPlayer3, audioPlayer4].forEach(player => {
+            player.src = currentAudio;
+            player.volume = 0.25;  // 4つのプレイヤーで均等に音量を分散
+            player.play();
         });
-    </script>
+
+        // シークバーの設定
+        audioPlayer1.addEventListener('loadedmetadata', () => {
+            seekSlider.max = audioPlayer1.duration;
+        });
+
+        audioPlayer1.addEventListener('timeupdate', () => {
+            seekSlider.value = audioPlayer1.currentTime;
+        });
+
+        document.getElementById('song-play').classList.add('play-scene-active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function changeSpeed() {
+        const speed = speedSlider.value;
+        [audioPlayer1, audioPlayer2, audioPlayer3, audioPlayer4].forEach(player => {
+            player.playbackRate = speed;
+        });
+    }
+
+    function seekAudio() {
+        const currentTime = seekSlider.value;
+        [audioPlayer1, audioPlayer2, audioPlayer3, audioPlayer4].forEach(player => {
+            player.currentTime = currentTime;
+        });
+    }
+
+    function backToHome() {
+        document.getElementById('song-play').classList.remove('play-scene-active');
+        document.body.style.overflow = 'auto';
+
+        // 曲の停止
+        [audioPlayer1, audioPlayer2, audioPlayer3, audioPlayer4].forEach(player => {
+            player.pause();
+        });
+    }
+</script>
 
 </body>
 </html>
