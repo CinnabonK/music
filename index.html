@@ -113,9 +113,9 @@
 
     function playMusic(songId) {
         const songs = {
-            'song1': 'song1.mp3',
+            'song1': 'mp3/song1.mp3',
             'song2': 'mp3/song2.mp3',
-            'song3': 'song3.mp3'
+            'song3': 'mp3/song3.mp3'
         };
         document.getElementById('song-title').innerText = songId === 'song1' ? '曲 1' : songId === 'song2' ? '曲 2' : '曲 3';
         currentAudio = songs[songId];
